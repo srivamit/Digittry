@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Custom Equation Solver</title>
+</head>
+<body>
+    <h1>Custom Equation Solver</h1>
+    
+    <p>Enter the equation in terms of a, b, and c (e.g., "a + (b/4) * c - 6 = 5"):</p>
+    <input type="text" id="equationInput" placeholder="Enter your equation">
+    
+    <p>Enter allowed numbers separated by commas (e.g., "1, 2, 3, 4, 5, 6, 7, 8, 9"):</p>
+    <input type="text" id="numbersInput" placeholder="Enter allowed numbers">
+
+    <button onclick="findCombinations()">Find Combinations</button>
+    
+    <h2>Valid Combinations:</h2>
+    <ul id="result"></ul>
+
+    <script>
+        function findCombinations() {
+            const equationInput = document.getElementById('equationInput').value;
+            const numbersInput = document.getElementById('numbersInput').value.split(',').map(Number);
+            const validCombinations = [];
+
+            if (!equationInput || numbersInput.length === 0) {
+                alert("Please enter both the equation and allowed numbers!");
+                return;
+            }
+
+            // Iterate through all combinations of a, b, c
+            for (let a of numbersInput) {
+                for (let b of numbersInput) {
+                    for (let c of numbersInput) {
+                        // Check if a, b, and c are different (no repetition)
+                        if (a !== b && b !== c && a !== c) {
+                            // Create a dynamic equation using eval (be cautious with eval)
+                            const expression = equationInput
+                                .replace(/a/g, a)
+                                .replace(/b/g, b)
+                                .replace(/c/g, c);
+                            
+                            try {
+                                // Evaluate the equation
+                                const [left, right] = expression.split('=').map(eval);
+                                
+                                // Check if the equation is satisfied
+                                if (left === right) {
+                                    validCombinations.push({ a, b, c });
+                                }
+                            } catch (error) {
+                                alert("Error in evaluating the equation. Please check the format.");
+                                return;
+                            }
+                        }
+                    }
+                }
+            }
+
+            // Display the valid combinations in the HTML
+            const resultElement = document.getElementById('result');
+            resultElement.innerHTML = ''; // Clear previous results
+            validCombinations.forEach(combination => {
+                const listItem = document.createElement('li');
+                listItem.textContent = `a = ${combination.a}, b = ${combination.b}, c = ${combination.c}`;
+                resultElement.appendChild(listItem);
+            });
+
+            if (validCombinations.length === 0) {
+                const listItem = document.createElement('li');
+                listItem.textContent = 'No valid combinations found.';
+                resultElement.appendChild(listItem);
+            }
+        }
+    </script>
+</body>
+</html>
